@@ -6,55 +6,118 @@
     <title>Projeto Integrador - TEMA 01</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f5f7fa; color: #333; padding: 20px; max-width: 800px; margin: 0 auto; }
+        body { background: #f5f7fa; color: #333; padding: 20px; max-width: 1000px; margin: 0 auto; }
         .container { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h1 { color: #2c3e50; margin-bottom: 10px; }
         .subtitle { color: #7f8c8d; margin-bottom: 30px; }
-        .menu { display: flex; flex-direction: column; gap: 20px; margin-top: 30px; }
-        .card { background: #f8f9fa; border-left: 5px solid #3498db; padding: 20px; border-radius: 10px; transition: all 0.3s; }
+        .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { background: #f8f9fa; border-left: 5px solid; padding: 20px; border-radius: 10px; transition: all 0.3s; }
         .card:hover { transform: translateX(10px); background: #e8f4fc; }
-        .card h2 { color: #2c3e50; margin-bottom: 10px; }
-        .card p { color: #555; margin-bottom: 15px; }
-        .btn { display: inline-block; background: #3498db; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; }
-        .btn:hover { background: #2980b9; }
-        .date { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.9rem; display: inline-block; margin-bottom: 10px; }
-        footer { margin-top: 40px; text-align: center; color: #7f8c8d; font-size: 0.9rem; }
+        .card-tema { border-left-color: #3498db; }
+        .card-recurso { border-left-color: #2ecc71; }
+        .card-inspiracao { border-left-color: #9b59b6; }
+        .card-material { border-left-color: #e74c3c; }
+        .card-github { border-left-color: #24292e; }
+        .card h2 { color: #2c3e50; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .card p { color: #555; margin-bottom: 15px; line-height: 1.5; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background 0.3s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-tema { background: #3498db; }
+        .btn-recurso { background: #2ecc71; }
+        .btn-inspiracao { background: #9b59b6; }
+        .btn-material { background: #e74c3c; }
+        .btn-github { background: #24292e; }
+        .date { background: #34495e; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.9rem; display: inline-block; margin-bottom: 10px; }
+        footer { margin-top: 40px; text-align: center; color: #7f8c8d; font-size: 0.9rem; padding-top: 20px; border-top: 1px solid #eee; }
+        .icon { font-size: 1.2em; }
         .external-link::after { content: " ↗"; font-size: 0.9em; }
+        .pdf-link::after { content: " 📄"; font-size: 0.9em; }
+        .github-link::after { content: " ⭐"; font-size: 0.9em; }
+        .grid-full { grid-column: 1 / -1; }
+        .repo-info { background: #f1f8ff; border: 1px dashed #c8e1ff; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .repo-info p { margin: 5px 0; font-size: 0.9rem; color: #555; }
+        .repo-info a { color: #0366d6; text-decoration: none; }
+        .repo-info a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📋 Projeto Integrador</h1>
-        <p class="subtitle">Agência de Jornalismo Web - TEMA 01: Planejamento e Organização</p>
+        <h1>📋 Projeto Integrador - Agência de Jornalismo Web</h1>
+        <p class="subtitle">TEMA 01: Planejamento do Projeto e Organização da Agência</p>
         
         <div class="menu">
-            <div class="card">
+            <!-- TEMA 01 -->
+            <div class="card card-tema">
                 <span class="date">06/02 - Aula Presencial</span>
-                <h2>🎯 TEMA 01: Planejamento do Projeto</h2>
-                <p>Apresentação do projeto, formação das agências, definição de papéis e planejamento inicial do site.</p>
-                <a href="tema1.html" class="btn" target="_blank">Acessar Conteúdo Completo →</a>
+                <h2><span class="icon">🎯</span> TEMA 01: Planejamento</h2>
+                <p>Apresentação do projeto, formação das agências, definição de papéis, planejamento inicial do site e wireframe.</p>
+                <a href="tema1.html" class="btn btn-tema" target="_blank">
+                    <span>Acessar Conteúdo Completo</span> →
+                </a>
             </div>
             
-            <div class="card">
+            <!-- TEMPLATE -->
+            <div class="card card-recurso">
                 <span class="date">Recurso Prático</span>
-                <h2>🛠️ Template de Apoio</h2>
-                <p>Modelo pronto para personalização: edite cores, textos, imagens e publique seu site rapidamente.</p>
-                <a href="modelo.html" class="btn" target="_blank">Usar Template →</a>
+                <h2><span class="icon">🛠️</span> Template de Apoio</h2>
+                <p>Modelo pronto para personalização: edite cores, textos, imagens, vídeos e áudios. Ideal para iniciantes.</p>
+                <a href="modelo.html" class="btn btn-recurso" target="_blank">
+                    <span>Usar Template</span> →
+                </a>
             </div>
             
-            <div class="card">
+            <!-- CRONOGRAMA -->
+            <div class="card card-material">
+                <span class="date">Planejamento</span>
+                <h2><span class="icon">📅</span> Cronograma do Curso</h2>
+                <p>Detalhamento das 6 aulas presenciais, prazos de entrega e atividades práticas de cada encontro.</p>
+                <a href="Cronograma.pdf" class="btn btn-material pdf-link" target="_blank" rel="noopener noreferrer">
+                    <span>Ver Cronograma</span> →
+                </a>
+            </div>
+            
+            <!-- CONTEÚDO DO CURSO -->
+            <div class="card card-material">
+                <span class="date">Documentação</span>
+                <h2><span class="icon">📘</span> Conteúdo do Curso</h2>
+                <p>Documento completo com objetivos, critérios de avaliação, especificações técnicas e requisitos do projeto.</p>
+                <a href="Projeto_Integrador.pdf" class="btn btn-material pdf-link" target="_blank" rel="noopener noreferrer">
+                    <span>Abrir PDF</span> →
+                </a>
+            </div>
+            
+            <!-- REPOSITÓRIO GITHUB -->
+            <div class="card card-github">
+                <span class="date">Código Fonte</span>
+                <h2><span class="icon">💻</span> Repositório Oficial</h2>
+                <p>Código completo do TEMA 01 no GitHub. Inclui template, exemplos e materiais de referência.</p>
+                <a href="https://github.com/almeida-cma/proj-1" class="btn btn-github github-link" target="_blank" rel="noopener noreferrer">
+                    <span>Acessar Repositório</span> →
+                </a>
+                <div class="repo-info">
+                    <p><strong>📂 Repositório:</strong> github.com/almeida-cma/proj-1</p>
+                    <p><strong>🔗 Link direto:</strong> <a href="https://github.com/almeida-cma/proj-1" target="_blank">https://github.com/almeida-cma/proj-1</a></p>
+                </div>
+            </div>
+            
+            <!-- EXEMPLO REAL -->
+            <div class="card card-inspiracao">
                 <span class="date">Inspiração</span>
-                <h2>📰 Exemplo Real: Educação MG</h2>
-                <p>Portal oficial de notícias educacionais de Minas Gerais. Observe estrutura, conteúdo e formato.</p>
-                <a href="https://www.educacao.mg.gov.br/noticias/?categoria=5" class="btn external-link" target="_blank" rel="noopener noreferrer">
-                    Visitar Site Exemplo →
+                <h2><span class="icon">📰</span> Exemplo Real</h2>
+                <p>Portal oficial de notícias educacionais de Minas Gerais. Observe estrutura, conteúdo e formato jornalístico.</p>
+                <a href="https://www.educacao.mg.gov.br/noticias/?categoria=5" class="btn btn-inspiracao external-link" target="_blank" rel="noopener noreferrer">
+                    <span>Visitar Educação MG</span> →
                 </a>
             </div>
         </div>
         
         <footer>
-            <p>Curso Técnico em Desenvolvimento de Sistemas | 6 encontros presenciais</p>
-            <p>🌐 Produto Final: Site público + 3 notícias + Vídeo + Podcast</p>
+            <p><strong>Curso Técnico em Desenvolvimento de Sistemas</strong> | 6 encontros presenciais</p>
+            <p>🌐 <strong>Produto Final:</strong> Site público + 3 notícias + Vídeo + Podcast + Documentação</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                🔗 Todos os links abrem em nova aba | 
+                📚 Materiais atualizados no GitHub
+            </p>
         </footer>
     </div>
 </body>
