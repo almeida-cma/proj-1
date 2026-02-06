@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Agência de Notícias</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --cor-principal: #2c3e50;
+            --cor-secundaria: #3498db;
+            --cor-destaque: #e74c3c;
+            --cor-texto: #333;
+            --cor-fundo: #f9f9f9;
+            --cor-borda: #ddd;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        body.modo-visualizacao {
+            padding: 0;
+        }
+
+        body.modo-visualizacao .personalizacao,
+        body.modo-visualizacao .controles,
+        body.modo-visualizacao .area-upload,
+        body.modo-visualizacao input[type="color"],
+        body.modo-visualizacao .grupo-cor,
+        body.modo-visualizacao .botao,
+        body.modo-visualizacao .editor-texto,
+        body.modo-visualizacao .noticia-titulo[contenteditable="true"],
+        body.modo-visualizacao .membro-avatar[contenteditable="true"],
+        body.modo-visualizacao p[contenteditable="true"],
+        body.modo-visualizacao span[contenteditable="true"] {
+            display: none !important;
+        }
+
+        body.modo-visualizacao .noticia-titulo {
+            cursor: default;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        .cabecalho {
+            background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .logo-texto {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .logo-texto:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .slogan {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .nome-equipe-editor {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .nome-equipe-editor:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ===== CONTROLES DE PERSONALIZAÇÃO ===== */
+        .personalizacao {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--cor-secundaria);
+        }
+
+        .personalizacao h3 {
+            color: var(--cor-principal);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .grupo-cor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grupo-cor label {
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* ===== SEÇÃO DE NOTÍCIAS ===== */
+        .noticias-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .noticia {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--cor-borda);
+            position: relative;
+        }
+
+        .noticia:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .noticia-cabecalho {
+            background: var(--cor-principal);
+            color: white;
+            padding: 15px;
+            position: relative;
+        }
+
+        .noticia-numero {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--cor-destaque);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .noticia-titulo {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            min-height: 60px;
+            padding: 15px 10px 10px 40px;
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            transition: border 0.3s;
+        }
+
+        .noticia-titulo[contenteditable="true"]:hover,
+        .noticia-titulo[contenteditable="true"]:focus {
+            border-color: var(--cor-secundaria);
+            background: rgba(52, 152, 219, 0.05);
+            outline: none;
+        }
+
+        .noticia-conteudo {
+            padding: 20px;
+        }
+
+        /* ===== ÁREAS DE UPLOAD ===== */
+        .area-upload {
+            border: 2px dashed var(--cor-borda);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            margin: 15px 0;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .area-upload:hover {
+            border-color: var(--cor-secundaria);
+            background: #e8f4fc;
+        }
+
+        .area-upload i {
+            font-size: 3rem;
+            color: var(--cor-secundaria);
+            margin-bottom: 15px;
+        }
+
+        .area-upload p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .botao-upload {
+            background: var(--cor-secundaria);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .botao-upload:hover {
+            background: #2980b9;
+        }
+
+        /* ===== MÍDIAS ===== */
+        .imagem-noticia {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px solid var(--cor-borda);
+        }
+
+        .midia-container {
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .midia-container h4 {
+            color: var(--cor-principal);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-video, .player-audio {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* ===== EDITOR DE TEXTO ===== */
+        .editor-texto {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid var(--cor-borda);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 10px 0;
+            resize: vertical;
+            background: white;
+            transition: border 0.3s;
+        }
+
+        .editor-texto:focus {
+            border-color: var(--cor-secundaria);
+            outline: none;
+        }
+
+        /* ===== RODAPÉ ===== */
+        .rodape {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background: var(--cor-principal);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .equipe {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .membro {
+            text-align: center;
+        }
+
+        .membro-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--cor-secundaria);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .membro-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        /* ===== BOTÕES DE CONTROLE ===== */
+        .controles {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .botao {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .botao-primario {
+            background: var(--cor-secundaria);
+            color: white;
+        }
+
+        .botao-primario:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .botao-secundario {
+            background: white;
+            color: var(--cor-principal);
+            border: 2px solid var(--cor-principal);
+        }
+
+        .botao-secundario:hover {
+            background: var(--cor-principal);
+            color: white;
+        }
+
+        .botao-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .botao-danger:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        /* ===== BANNER DE VISUALIZAÇÃO ===== */
+        .banner-visualizacao {
+            background: linear-gradient(90deg, var(--cor-principal), var(--cor-secundaria));
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .banner-visualizacao a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        .banner-visualizacao a:hover {
+            background: rgba(255,255,255,0.3);
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .noticias-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .cores {
+                grid-template-columns: 1fr;
+            }
+            
+            .equipe {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .controles {
+                flex-direction: column;
+            }
+            
+            .botao {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .noticia-numero {
+                left: 15px;
+                top: -8px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
+            .noticia-titulo {
+                padding-left: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO DA AGÊNCIA (EDITÁVEL) -->
+    <header class="cabecalho" id="cabecalho">
+        <div class="logo">
+            <i class="fas fa-newspaper"></i> 
+            <div class="logo-texto" contenteditable="true" 
+                 oninput="salvarConteudo()" 
+                 onblur="salvarConteudo()">
+                AGÊNCIA ESCOLAR
+            </div>
+        </div>
+        <p class="slogan" contenteditable="true" 
+           oninput="salvarConteudo()" 
+           onblur="salvarConteudo()">
+            Notícias fresquinhas direto da nossa escola!
+        </p>
+        <p>Site criado por: 
+            <strong class="nome-equipe-editor" contenteditable="true" id="nome-equipe" 
+                    oninput="salvarConteudo()" 
+                    onblur="salvarConteudo()">
+                Sua Equipe Aqui
+            </strong>
+        </p>
+    </header>
+
+    <!-- ÁREA DE PERSONALIZAÇÃO -->
+    <section class="personalizacao">
+        <h3><i class="fas fa-palette"></i> PERSONALIZE SEU SITE</h3>
+        
+        <div class="cores">
+            <div class="grupo-cor">
+                <label>Cor Principal:</label>
+                <input type="color" id="cor-principal" value="#2c3e50">
+            </div>
+            <div class="grupo-cor">
+                <label>Cor Secundária:</label>
+                <input type="color" id="cor-secundaria" value="#3498db">
+            </div>
+            <div class="grupo-cor">
+                <label>Cor de Destaque:</label>
+                <input type="color" id="cor-destaque" value="#e74c3c">
+            </div>
+        </div>
+        
+        <div class="controles">
+            <button class="botao botao-primario" onclick="aplicarCores()">
+                <i class="fas fa-check"></i> Aplicar Cores
+            </button>
+            <button class="botao botao-danger" onclick="resetarTudo()">
+                <i class="fas fa-broom"></i> Resetar Tudo
+            </button>
+        </div>
+    </section>
+
+    <!-- NOTÍCIA 1 -->
+    <div class="noticias-container">
+        <article class="noticia">
+            <div class="noticia-cabecalho">
+                <div class="noticia-numero">1</div>
+                <h2 class="noticia-titulo" contenteditable="true" 
+                    oninput="salvarConteudo()" 
+                    onblur="salvarConteudo()">
+                    🎓 Alunos Criam Site de Notícias Escolares
+                </h2>
+            </div>
+            
+            <div class="noticia-conteudo">
+                <div class="area-upload" onclick="document.getElementById('imagem1').click()">
+                    <i class="fas fa-image"></i>
+                    <p>CLIQUE AQUI para adicionar uma imagem para esta notícia</p>
+                    <p><small>Arraste uma imagem ou clique para selecionar</small></p>
+                    <input type="file" id="imagem1" accept="image/*" style="display: none;" onchange="carregarImagem(this, 'imagem-exibida1')">
+                </div>
+                
+                <img id="imagem-exibida1" class="imagem-noticia" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=400&fit=crop" alt="Imagem da notícia">
+                
+                <textarea class="editor-texto" id="texto-noticia-1" 
+                          oninput="salvarConteudo()" 
+                          onblur="salvarConteudo()"
+                          placeholder="Digite o texto da notícia aqui...">
+Projeto inovador une tecnologia e comunicação. Alunos do curso técnico estão desenvolvendo sites reais que serão publicados na internet. A iniciativa promove trabalho em equipe e aprendizado prático, preparando os estudantes para o mercado digital.
+
+Os sites terão notícias sobre eventos escolares, entrevistas com professores e cobertura de atividades extracurriculares. "É uma oportunidade única de aplicar na prática o que aprendemos em sala de aula", disse uma aluna participante.
+                </textarea>
+                
+                <div class="midia-container">
+                    <h4><i class="fas fa-video"></i> VÍDEO DA REPORTAGEM</h4>
+                    <div class="area-upload" onclick="document.getElementById('video1').click()">
+                        <i class="fas fa-video"></i>
+                        <p>ADICIONE UM VÍDEO para esta notícia</p>
+                        <input type="file" id="video1" accept="video/*" style="display: none;" onchange="carregarVideo(this, 'video-player1')">
+                    </div>
+                    <video id="video-player1" class="player-video" controls>
+                        <source src="" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                </div>
+            </div>
+        </article>
+
+        <!-- NOTÍCIA 2 -->
+        <article class="noticia">
+            <div class="noticia-cabecalho">
+                <div class="noticia-numero">2</div>
+                <h2 class="noticia-titulo" contenteditable="true" 
+                    oninput="salvarConteudo()" 
+                    onblur="salvarConteudo()">
+                    🏆 Escola Ganha Prêmio em Feira de Ciências
+                </h2>
+            </div>
+            
+            <div class="noticia-conteudo">
+                <div class="area-upload" onclick="document.getElementById('imagem2').click()">
+                    <i class="fas fa-image"></i>
+                    <p>CLIQUE AQUI para adicionar uma imagem para esta notícia</p>
+                    <p><small>Arraste uma imagem ou clique para selecionar</small></p>
+                    <input type="file" id="imagem2" accept="image/*" style="display: none;" onchange="carregarImagem(this, 'imagem-exibida2')">
+                </div>
+                
+                <img id="imagem-exibida2" class="imagem-noticia" src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&h=400&fit=crop" alt="Imagem da notícia">
+                
+                <textarea class="editor-texto" id="texto-noticia-2"
+                          oninput="salvarConteudo()" 
+                          onblur="salvarConteudo()"
+                          placeholder="Digite o texto da notícia aqui...">
+Nossa escola foi destaque na Feira Regional de Ciências com o projeto "Energia Sustentável". O trabalho desenvolvido pelos alunos do 3º ano conquistou o primeiro lugar na categoria Inovação Tecnológica.
+
+O projeto apresenta soluções para economizar energia elétrica utilizando sensores de movimento e iluminação LED automatizada. "Ficamos muito felizes com o reconhecimento do nosso trabalho", comentou o professor orientador.
+                </textarea>
+                
+                <div class="midia-container">
+                    <h4><i class="fas fa-microphone-alt"></i> PODCAST SOBRE O PRÊMIO</h4>
+                    <div class="area-upload" onclick="document.getElementById('audio1').click()">
+                        <i class="fas fa-microphone"></i>
+                        <p>ADICIONE UM PODCAST para esta notícia</p>
+                        <input type="file" id="audio1" accept="audio/*" style="display: none;" onchange="carregarAudio(this, 'audio-player1')">
+                    </div>
+                    <audio id="audio-player1" class="player-audio" controls>
+                        <source src="" type="audio/mpeg">
+                        Seu navegador não suporta áudio.
+                    </audio>
+                </div>
+            </div>
+        </article>
+
+        <!-- NOTÍCIA 3 -->
+        <article class="noticia">
+            <div class="noticia-cabecalho">
+                <div class="noticia-numero">3</div>
+                <h2 class="noticia-titulo" contenteditable="true" 
+                    oninput="salvarConteudo()" 
+                    onblur="salvarConteudo()">
+                    ⚽ Time de Futebol Classificado para as Finais
+                </h2>
+            </div>
+            
+            <div class="noticia-conteudo">
+                <div class="area-upload" onclick="document.getElementById('imagem3').click()">
+                    <i class="fas fa-image"></i>
+                    <p>CLIQUE AQUI para adicionar uma imagem para esta notícia</p>
+                    <p><small>Arraste uma imagem ou clique para selecionar</small></p>
+                    <input type="file" id="imagem3" accept="image/*" style="display: none;" onchange="carregarImagem(this, 'imagem-exibida3')">
+                </div>
+                
+                <img id="imagem-exibida3" class="imagem-noticia" src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=400&fit=crop" alt="Imagem da notícia">
+                
+                <textarea class="editor-texto" id="texto-noticia-3"
+                          oninput="salvarConteudo()" 
+                          onblur="salvarConteudo()"
+                          placeholder="Digite o texto da notícia aqui...">
+Com uma vitória emocionante por 3x2, o time de futebol da escola garantiu vaga nas finais do campeonato estudantil. A partida decisiva aconteceu no último sábado e contou com a torcida organizada dos alunos.
+
+O gol da vitória foi marcado nos acréscimos pelo capitão da equipe. "É a realização de um sonho. Treinamos muito para chegar até aqui", disse emocionado. A final será no próximo mês contra a escola campeã do ano passado.
+                </textarea>
+                
+                <div class="midia-container">
+                    <h4><i class="fas fa-photo-video"></i> VÍDEO DOS MELHORES MOMENTOS</h4>
+                    <div class="area-upload" onclick="document.getElementById('video2').click()">
+                        <i class="fas fa-video"></i>
+                        <p>ADICIONE UM VÍDEO para esta notícia</p>
+                        <input type="file" id="video2" accept="video/*" style="display: none;" onchange="carregarVideo(this, 'video-player2')">
+                    </div>
+                    <video id="video-player2" class="player-video" controls>
+                        <source src="" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- RODAPÉ COM EQUIPE -->
+    <footer class="rodape" id="rodape">
+        <h3><i class="fas fa-users"></i> NOSSA EQUIPE</h3>
+        <p>Conheça os responsáveis por este site:</p>
+        
+        <div class="equipe" id="equipe">
+            <div class="membro">
+                <div class="membro-avatar" contenteditable="true" 
+                     oninput="salvarConteudo()" 
+                     onblur="salvarConteudo()">A</div>
+                <p contenteditable="true" 
+                   oninput="salvarConteudo()" 
+                   onblur="salvarConteudo()">Ana - Editora</p>
+            </div>
+            <div class="membro">
+                <div class="membro-avatar" contenteditable="true" 
+                     oninput="salvarConteudo()" 
+                     onblur="salvarConteudo()">B</div>
+                <p contenteditable="true" 
+                   oninput="salvarConteudo()" 
+                   onblur="salvarConteudo()">Bruno - Webmaster</p>
+            </div>
+            <div class="membro">
+                <div class="membro-avatar" contenteditable="true" 
+                     oninput="salvarConteudo()" 
+                     onblur="salvarConteudo()">C</div>
+                <p contenteditable="true" 
+                   oninput="salvarConteudo()" 
+                   onblur="salvarConteudo()">Carla - Repórter</p>
+            </div>
+            <div class="membro">
+                <div class="membro-avatar" contenteditable="true" 
+                     oninput="salvarConteudo()" 
+                     onblur="salvarConteudo()">D</div>
+                <p contenteditable="true" 
+                   oninput="salvarConteudo()" 
+                   onblur="salvarConteudo()">Daniel - Fotógrafo</p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            <i class="fas fa-calendar-alt"></i> Publicado em: 
+            <span contenteditable="true" id="data-publicacao" 
+                  oninput="salvarConteudo()" 
+                  onblur="salvarConteudo()">10 de Novembro de 2023</span>
+        </p>
+        
+        <div class="controles">
+            <button class="botao botao-primario" onclick="salvarSite()">
+                <i class="fas fa-save"></i> Salvar Alterações
+            </button>
+            <button class="botao botao-secundario" onclick="exportarSite()">
+                <i class="fas fa-download"></i> Exportar Site
+            </button>
+            <button class="botao botao-secundario" onclick="visualizarSite()">
+                <i class="fas fa-eye"></i> Visualizar
+            </button>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+            <i class="fas fa-code"></i> Site desenvolvido como parte do Projeto Integrador - Agência de Jornalismo Web
+        </p>
+    </footer>
+
+    <script>
+        // ===== VARIÁVEIS GLOBAIS =====
+        let coresAtuais = {
+            principal: '#2c3e50',
+            secundaria: '#3498db',
+            destaque: '#e74c3c'
+        };
+
+        // ===== CONFIGURAÇÕES INICIAIS =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restaurar cores salvas
+            const coresSalvas = JSON.parse(localStorage.getItem('coresSite')) || coresAtuais;
+            coresAtuais = coresSalvas;
+            
+            // Aplicar cores salvas
+            aplicarCoresSalvas(coresAtuais);
+            
+            // Atualizar inputs de cor
+            document.getElementById('cor-principal').value = coresAtuais.principal;
+            document.getElementById('cor-secundaria').value = coresAtuais.secundaria;
+            document.getElementById('cor-destaque').value = coresAtuais.destaque;
+            
+            // Restaurar conteúdo salvo
+            const conteudoSalvo = JSON.parse(localStorage.getItem('conteudoSite')) || {};
+            
+            if (conteudoSalvo.logo) {
+                document.querySelector('.logo-texto').textContent = conteudoSalvo.logo;
+            }
+            
+            if (conteudoSalvo.slogan) {
+                document.querySelector('.slogan').textContent = conteudoSalvo.slogan;
+            }
+            
+            if (conteudoSalvo.nomeEquipe) {
+                document.getElementById('nome-equipe').textContent = conteudoSalvo.nomeEquipe;
+            }
+            
+            if (conteudoSalvo.titulos) {
+                const titulos = document.querySelectorAll('.noticia-titulo');
+                conteudoSalvo.titulos.forEach((titulo, index) => {
+                    if (titulos[index] && titulo) {
+                        titulos[index].textContent = titulo;
+                    }
+                });
+            }
+            
+            if (conteudoSalvo.textos) {
+                conteudoSalvo.textos.forEach((texto, index) => {
+                    const textarea = document.getElementById(`texto-noticia-${index + 1}`);
+                    if (textarea && texto) {
+                        textarea.value = texto;
+                    }
+                });
+            }
+            
+            if (conteudoSalvo.data) {
+                document.getElementById('data-publicacao').textContent = conteudoSalvo.data;
+            }
+            
+            if (conteudoSalvo.equipe) {
+                const membros = document.querySelectorAll('.membro p');
+                const avatares = document.querySelectorAll('.membro-avatar');
+                conteudoSalvo.equipe.forEach((membro, index) => {
+                    if (membros[index] && membro.nome) {
+                        membros[index].textContent = membro.nome;
+                    }
+                    if (avatares[index] && membro.avatar) {
+                        avatares[index].textContent = membro.avatar;
+                    }
+                });
+            }
+            
+            // Restaurar imagens salvas
+            const imagensSalvas = JSON.parse(localStorage.getItem('imagensSite')) || {};
+            Object.keys(imagensSalvas).forEach(id => {
+                const img = document.getElementById(id);
+                if (img) {
+                    img.src = imagensSalvas[id];
+                    img.style.display = 'block';
+                    const inputId = id.replace('imagem-exibida', 'imagem');
+                    const areaUpload = document.getElementById(inputId)?.parentElement;
+                    if (areaUpload) {
+                        areaUpload.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Configurar arrastar e soltar
+            configurarArrastarSoltar();
+            
+            // Atualizar contagem
+            atualizarContagem();
+        });
+
+        // ===== FUNÇÕES DE PERSONALIZAÇÃO =====
+        function aplicarCores() {
+            coresAtuais = {
+                principal: document.getElementById('cor-principal').value,
+                secundaria: document.getElementById('cor-secundaria').value,
+                destaque: document.getElementById('cor-destaque').value
+            };
+            
+            // Aplicar ao CSS
+            document.documentElement.style.setProperty('--cor-principal', coresAtuais.principal);
+            document.documentElement.style.setProperty('--cor-secundaria', coresAtuais.secundaria);
+            document.documentElement.style.setProperty('--cor-destaque', coresAtuais.destaque);
+            
+            // Salvar no localStorage
+            localStorage.setItem('coresSite', JSON.stringify(coresAtuais));
+            
+            mostrarMensagem('🎨 Cores aplicadas com sucesso!', 'success');
+        }
+        
+        function aplicarCoresSalvas(cores) {
+            document.documentElement.style.setProperty('--cor-principal', cores.principal);
+            document.documentElement.style.setProperty('--cor-secundaria', cores.secundaria);
+            document.documentElement.style.setProperty('--cor-destaque', cores.destaque);
+        }
+        
+        function resetarTudo() {
+            if (confirm('⚠️ ATENÇÃO!\n\nIsso irá resetar TODAS as personalizações:\n\n• Cores personalizadas\n• Conteúdo editado\n• Imagens carregadas\n• Configurações salvas\n\nDeseja continuar?')) {
+                // Limpar localStorage
+                localStorage.clear();
+                
+                // Resetar cores
+                coresAtuais = {
+                    principal: '#2c3e50',
+                    secundaria: '#3498db',
+                    destaque: '#e74c3c'
+                };
+                
+                document.getElementById('cor-principal').value = coresAtuais.principal;
+                document.getElementById('cor-secundaria').value = coresAtuais.secundaria;
+                document.getElementById('cor-destaque').value = coresAtuais.destaque;
+                
+                aplicarCoresSalvas(coresAtuais);
+                
+                // Resetar conteúdo
+                document.querySelector('.logo-texto').textContent = 'AGÊNCIA ESCOLAR';
+                document.querySelector('.slogan').textContent = 'Notícias fresquinhas direto da nossa escola!';
+                document.getElementById('nome-equipe').textContent = 'Sua Equipe Aqui';
+                
+                // Resetar notícias
+                const titulosPadrao = [
+                    '🎓 Alunos Criam Site de Notícias Escolares',
+                    '🏆 Escola Ganha Prêmio em Feira de Ciências',
+                    '⚽ Time de Futebol Classificado para as Finais'
+                ];
+                
+                document.querySelectorAll('.noticia-titulo').forEach((titulo, index) => {
+                    titulo.textContent = titulosPadrao[index];
+                });
+                
+                // Resetar textos
+                const textosPadrao = [
+                    `Projeto inovador une tecnologia e comunicação. Alunos do curso técnico estão desenvolvendo sites reais que serão publicados na internet. A iniciativa promove trabalho em equipe e aprendizado prático, preparando os estudantes para o mercado digital.\n\nOs sites terão notícias sobre eventos escolares, entrevistas com professores e cobertura de atividades extracurriculares. "É uma oportunidade única de aplicar na prática o que aprendemos em sala de aula", disse uma aluna participante.`,
+                    `Nossa escola foi destaque na Feira Regional de Ciências com o projeto "Energia Sustentável". O trabalho desenvolvido pelos alunos do 3º ano conquistou o primeiro lugar na categoria Inovação Tecnológica.\n\nO projeto apresenta soluções para economizar energia elétrica utilizando sensores de movimento e iluminação LED automatizada. "Ficamos muito felizes com o reconhecimento do nosso trabalho", comentou o professor orientador.`,
+                    `Com uma vitória emocionante por 3x2, o time de futebol da escola garantiu vaga nas finais do campeonato estudantil. A partida decisiva aconteceu no último sábado e contou com a torcida organizada dos alunos.\n\nO gol da vitória foi marcado nos acréscimos pelo capitão da equipe. "É a realização de um sonho. Treinamos muito para chegar até aqui", disse emocionado. A final será no próximo mês contra a escola campeã do ano passado.`
+                ];
+                
+                textosPadrao.forEach((texto, index) => {
+                    const textarea = document.getElementById(`texto-noticia-${index + 1}`);
+                    if (textarea) {
+                        textarea.value = texto;
+                    }
+                });
+                
+                // Resetar equipe
+                const nomesPadrao = ['Ana - Editora', 'Bruno - Webmaster', 'Carla - Repórter', 'Daniel - Fotógrafo'];
+                const avataresPadrao = ['A', 'B', 'C', 'D'];
+                
+                document.querySelectorAll('.membro p').forEach((p, index) => {
+                    if (nomesPadrao[index]) p.textContent = nomesPadrao[index];
+                });
+                
+                document.querySelectorAll('.membro-avatar').forEach((avatar, index) => {
+                    if (avataresPadrao[index]) avatar.textContent = avataresPadrao[index];
+                });
+                
+                // Resetar data
+                document.getElementById('data-publicacao').textContent = '10 de Novembro de 2023';
+                
+                // Resetar imagens
+                const imagensPadrao = [
+                    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=400&fit=crop',
+                    'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&h=400&fit=crop',
+                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=400&fit=crop'
+                ];
+                
+                document.querySelectorAll('.imagem-noticia').forEach((img, index) => {
+                    img.src = imagensPadrao[index];
+                    img.style.display = 'block';
+                });
+                
+                // Mostrar áreas de upload
+                document.querySelectorAll('.area-upload').forEach(area => {
+                    area.style.display = 'block';
+                });
+                
+                // Ocultar players de mídia
+                document.querySelectorAll('.player-video, .player-audio').forEach(player => {
+                    player.style.display = 'none';
+                    player.src = '';
+                });
+                
+                // Salvar estado resetado
+                salvarConteudo();
+                localStorage.setItem('coresSite', JSON.stringify(coresAtuais));
+                
+                mostrarMensagem('🔄 Tudo foi resetado para as configurações padrão!', 'info');
+                atualizarContagem();
+            }
+        }
+
+        // ===== FUNÇÕES DE UPLOAD =====
+        function carregarImagem(input, idImagem) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(idImagem);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    
+                    // Ocultar área de upload
+                    input.parentElement.style.display = 'none';
+                    
+                    // Salvar imagem no localStorage
+                    const imagensSalvas = JSON.parse(localStorage.getItem('imagensSite')) || {};
+                    imagensSalvas[idImagem] = e.target.result;
+                    localStorage.setItem('imagensSite', JSON.stringify(imagensSalvas));
+                    
+                    mostrarMensagem('📸 Imagem carregada com sucesso!', 'success');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function carregarVideo(input, idVideo) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const video = document.getElementById(idVideo);
+                    video.src = e.target.result;
+                    video.style.display = 'block';
+                    
+                    // Ocultar área de upload
+                    input.parentElement.style.display = 'none';
+                    
+                    mostrarMensagem('🎥 Vídeo carregado com sucesso!', 'success');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function carregarAudio(input, idAudio) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const audio = document.getElementById(idAudio);
+                    audio.src = e.target.result;
+                    audio.style.display = 'block';
+                    
+                    // Ocultar área de upload
+                    input.parentElement.style.display = 'none';
+                    
+                    mostrarMensagem('🎙️ Áudio carregado com sucesso!', 'success');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function configurarArrastarSoltar() {
+            const areasUpload = document.querySelectorAll('.area-upload');
+            
+            areasUpload.forEach(area => {
+                area.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#3498db';
+                    this.style.background = '#e8f4fc';
+                });
+                
+                area.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '';
+                    this.style.background = '';
+                });
+                
+                area.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '';
+                    this.style.background = '';
+                    
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        const input = this.querySelector('input[type="file"]');
+                        if (input) {
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            input.files = dataTransfer.files;
+                            input.dispatchEvent(new Event('change'));
+                        }
+                    }
+                });
+            });
+        }
+
+        // ===== FUNÇÕES DE SALVAMENTO =====
+        function salvarConteudo() {
+            // Coletar todos os dados
+            const conteudo = {
+                logo: document.querySelector('.logo-texto').textContent,
+                slogan: document.querySelector('.slogan').textContent,
+                nomeEquipe: document.getElementById('nome-equipe').textContent,
+                titulos: [],
+                textos: [],
+                data: document.getElementById('data-publicacao').textContent,
+                equipe: []
+            };
+            
+            // Coletar títulos
+            document.querySelectorAll('.noticia-titulo').forEach(titulo => {
+                conteudo.titulos.push(titulo.textContent);
+            });
+            
+            // Coletar textos
+            for (let i = 1; i <= 3; i++) {
+                const textarea = document.getElementById(`texto-noticia-${i}`);
+                if (textarea) {
+                    conteudo.textos.push(textarea.value);
+                }
+            }
+            
+            // Coletar dados da equipe
+            const membros = document.querySelectorAll('.membro');
+            membros.forEach(membro => {
+                const nome = membro.querySelector('p').textContent;
+                const avatar = membro.querySelector('.membro-avatar').textContent;
+                conteudo.equipe.push({ nome, avatar });
+            });
+            
+            // Salvar no localStorage
+            localStorage.setItem('conteudoSite', JSON.stringify(conteudo));
+        }
+        
+        function salvarSite() {
+            salvarConteudo();
+            mostrarMensagem('💾 Site salvo com sucesso! As alterações foram guardadas.', 'success');
+        }
+        
+        function exportarSite() {
+            // Primeiro salvar tudo
+            salvarConteudo();
+            
+            // Criar HTML para exportação COM CORES INCLUÍDAS
+            const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${document.querySelector('.logo-texto').textContent} - ${document.getElementById('nome-equipe').textContent}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== VARIÁVEIS DE COR (INCLUINDO AS PERSONALIZADAS) ===== */
+        :root {
+            --cor-principal: ${coresAtuais.principal};
+            --cor-secundaria: ${coresAtuais.secundaria};
+            --cor-destaque: ${coresAtuais.destaque};
+            --cor-texto: #333;
+            --cor-fundo: #f9f9f9;
+            --cor-borda: #ddd;
+        }
+
+        /* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        .cabecalho {
+            background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .logo-texto {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .slogan {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .nome-equipe-editor {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        /* ===== SEÇÃO DE NOTÍCIAS ===== */
+        .noticias-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .noticia {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--cor-borda);
+            position: relative;
+        }
+
+        .noticia-cabecalho {
+            background: var(--cor-principal);
+            color: white;
+            padding: 15px;
+            position: relative;
+        }
+
+        .noticia-numero {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--cor-destaque);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .noticia-titulo {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            min-height: 60px;
+            padding: 15px 10px 10px 40px;
+        }
+
+        .noticia-conteudo {
+            padding: 20px;
+        }
+
+        /* ===== MÍDIAS ===== */
+        .imagem-noticia {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px solid var(--cor-borda);
+        }
+
+        .midia-container {
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .midia-container h4 {
+            color: var(--cor-principal);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-video, .player-audio {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* ===== RODAPÉ ===== */
+        .rodape {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background: var(--cor-principal);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .equipe {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .membro {
+            text-align: center;
+        }
+
+        .membro-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--cor-secundaria);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .noticias-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .equipe {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .noticia-numero {
+                left: 15px;
+                top: -8px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
+            .noticia-titulo {
+                padding-left: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO EXPORTADO -->
+    <header class="cabecalho">
+        <div class="logo">
+            <i class="fas fa-newspaper"></i> 
+            <div class="logo-texto">${document.querySelector('.logo-texto').textContent}</div>
+        </div>
+        <p class="slogan">${document.querySelector('.slogan').textContent}</p>
+        <p>Site criado por: 
+            <strong class="nome-equipe-editor">${document.getElementById('nome-equipe').textContent}</strong>
+        </p>
+    </header>
+
+    <!-- NOTÍCIAS EXPORTADAS -->
+    <div class="noticias-container">
+        ${Array.from(document.querySelectorAll('.noticia')).map((noticia, index) => {
+            const titulo = noticia.querySelector('.noticia-titulo').textContent;
+            const texto = document.getElementById(`texto-noticia-${index + 1}`)?.value || '';
+            const imagem = noticia.querySelector('.imagem-noticia').outerHTML;
+            const midias = noticia.querySelector('.midia-container')?.innerHTML || '';
+            
+            return `
+        <article class="noticia">
+            <div class="noticia-cabecalho">
+                <div class="noticia-numero">${index + 1}</div>
+                <h2 class="noticia-titulo">${titulo}</h2>
+            </div>
+            <div class="noticia-conteudo">
+                ${imagem}
+                <div style="white-space: pre-wrap; line-height: 1.6; margin: 15px 0;">${texto}</div>
+                ${midias}
+            </div>
+        </article>`;
+        }).join('\n')}
+    </div>
+
+    <!-- RODAPÉ EXPORTADO -->
+    <footer class="rodape">
+        <h3><i class="fas fa-users"></i> NOSSA EQUIPE</h3>
+        <p>Conheça os responsáveis por este site:</p>
+        <div class="equipe">
+            ${Array.from(document.querySelectorAll('.membro')).map(membro => {
+                const avatar = membro.querySelector('.membro-avatar').textContent;
+                const nome = membro.querySelector('p').textContent;
+                return `
+            <div class="membro">
+                <div class="membro-avatar">${avatar}</div>
+                <p>${nome}</p>
+            </div>`;
+            }).join('\n')}
+        </div>
+        <p style="margin-top: 20px;">
+            <i class="fas fa-calendar-alt"></i> Publicado em: 
+            <span id="data-publicacao">${document.getElementById('data-publicacao').textContent}</span>
+        </p>
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+            <i class="fas fa-code"></i> Site desenvolvido como parte do Projeto Integrador - Agência de Jornalismo Web
+        </p>
+    </footer>
+</body>
+</html>`;
+            
+            // Criar arquivo para download
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            const nomeArquivo = `${document.getElementById('nome-equipe').textContent.replace(/\s+/g, '-').toLowerCase()}-agencia-noticias.html`;
+            a.download = nomeArquivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            mostrarMensagem('📁 Site exportado com cores personalizadas!', 'success');
+        }
+        
+        function visualizarSite() {
+            // Primeiro salvar tudo
+            salvarConteudo();
+            
+            // Criar uma nova janela
+            const previewWindow = window.open('', '_blank');
+            
+            // Construir HTML para visualização COM CORES
+            const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização: ${document.querySelector('.logo-texto').textContent}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== VARIÁVEIS DE COR (INCLUINDO AS PERSONALIZADAS) ===== */
+        :root {
+            --cor-principal: ${coresAtuais.principal};
+            --cor-secundaria: ${coresAtuais.secundaria};
+            --cor-destaque: ${coresAtuais.destaque};
+            --cor-texto: #333;
+            --cor-fundo: #f9f9f9;
+            --cor-borda: #ddd;
+        }
+
+        /* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 0;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ===== BANNER DE VISUALIZAÇÃO ===== */
+        .banner-visualizacao {
+            background: linear-gradient(90deg, var(--cor-principal), var(--cor-secundaria));
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .banner-visualizacao a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        .banner-visualizacao a:hover {
+            background: rgba(255,255,255,0.3);
+            text-decoration: none;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        .cabecalho {
+            background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .logo-texto {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .slogan {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .nome-equipe-editor {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        /* ===== SEÇÃO DE NOTÍCIAS ===== */
+        .noticias-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 0 20px 40px;
+            padding: 0 20px;
+        }
+
+        .noticia {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--cor-borda);
+            position: relative;
+        }
+
+        .noticia-cabecalho {
+            background: var(--cor-principal);
+            color: white;
+            padding: 15px;
+            position: relative;
+        }
+
+        .noticia-numero {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--cor-destaque);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .noticia-titulo {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            min-height: 60px;
+            padding: 15px 10px 10px 40px;
+        }
+
+        .noticia-conteudo {
+            padding: 20px;
+        }
+
+        /* ===== MÍDIAS ===== */
+        .imagem-noticia {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px solid var(--cor-borda);
+        }
+
+        .midia-container {
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .midia-container h4 {
+            color: var(--cor-principal);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-video, .player-audio {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* ===== RODAPÉ ===== */
+        .rodape {
+            text-align: center;
+            margin: 30px 20px;
+            padding: 20px;
+            background: var(--cor-principal);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .equipe {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .membro {
+            text-align: center;
+        }
+
+        .membro-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--cor-secundaria);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .noticias-container {
+                grid-template-columns: 1fr;
+                padding: 0 10px;
+                margin: 0 10px 40px;
+            }
+            
+            .cabecalho, .rodape {
+                margin: 20px 10px;
+            }
+            
+            .equipe {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .noticia-numero {
+                left: 15px;
+                top: -8px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
+            .noticia-titulo {
+                padding-left: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="banner-visualizacao">
+        👀 MODO VISUALIZAÇÃO - Esta é uma prévia do seu site. 
+        <a href="javascript:window.close()">[Fechar Visualização]</a>
+    </div>
+    
+    <!-- CABEÇALHO NA VISUALIZAÇÃO -->
+    <header class="cabecalho">
+        <div class="logo">
+            <i class="fas fa-newspaper"></i> 
+            <div class="logo-texto">${document.querySelector('.logo-texto').textContent}</div>
+        </div>
+        <p class="slogan">${document.querySelector('.slogan').textContent}</p>
+        <p>Site criado por: 
+            <strong class="nome-equipe-editor">${document.getElementById('nome-equipe').textContent}</strong>
+        </p>
+    </header>
+
+    <!-- NOTÍCIAS NA VISUALIZAÇÃO -->
+    <div class="noticias-container">
+        ${Array.from(document.querySelectorAll('.noticia')).map((noticia, index) => {
+            const titulo = noticia.querySelector('.noticia-titulo').textContent;
+            const texto = document.getElementById(`texto-noticia-${index + 1}`)?.value || '';
+            const imagem = noticia.querySelector('.imagem-noticia').outerHTML;
+            const midias = noticia.querySelector('.midia-container')?.innerHTML || '';
+            
+            return `
+        <article class="noticia">
+            <div class="noticia-cabecalho">
+                <div class="noticia-numero">${index + 1}</div>
+                <h2 class="noticia-titulo">${titulo}</h2>
+            </div>
+            <div class="noticia-conteudo">
+                ${imagem}
+                <div style="white-space: pre-wrap; line-height: 1.6; margin: 15px 0;">${texto}</div>
+                ${midias}
+            </div>
+        </article>`;
+        }).join('\n')}
+    </div>
+
+    <!-- RODAPÉ NA VISUALIZAÇÃO -->
+    <footer class="rodape">
+        <h3><i class="fas fa-users"></i> NOSSA EQUIPE</h3>
+        <p>Conheça os responsáveis por este site:</p>
+        <div class="equipe">
+            ${Array.from(document.querySelectorAll('.membro')).map(membro => {
+                const avatar = membro.querySelector('.membro-avatar').textContent;
+                const nome = membro.querySelector('p').textContent;
+                return `
+            <div class="membro">
+                <div class="membro-avatar">${avatar}</div>
+                <p>${nome}</p>
+            </div>`;
+            }).join('\n')}
+        </div>
+        <p style="margin-top: 20px;">
+            <i class="fas fa-calendar-alt"></i> Publicado em: 
+            <span id="data-publicacao">${document.getElementById('data-publicacao').textContent}</span>
+        </p>
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+            <i class="fas fa-code"></i> Site desenvolvido como parte do Projeto Integrador - Agência de Jornalismo Web
+        </p>
+    </footer>
+</body>
+</html>`;
+            
+            previewWindow.document.write(html);
+            previewWindow.document.close();
+            
+            mostrarMensagem('👁️ Abrindo visualização com cores personalizadas...', 'info');
+        }
+
+        // ===== FUNÇÕES AUXILIARES =====
+        function atualizarContagem() {
+            const textos = document.querySelectorAll('.editor-texto');
+            let totalCaracteres = 0;
+            
+            textos.forEach(textarea => {
+                totalCaracteres += textarea.value.length;
+            });
+            
+            // Mostrar status no título da página
+            const titulos = document.querySelectorAll('.noticia-titulo');
+            let titulosCompletos = 0;
+            titulos.forEach(titulo => {
+                if (titulo.textContent.trim().length > 5) {
+                    titulosCompletos++;
+                }
+            });
+            
+            const status = `${titulosCompletos}/3 notícias | ${totalCaracteres} caracteres`;
+            document.title = `${document.querySelector('.logo-texto').textContent} - ${status}`;
+        }
+        
+        function mostrarMensagem(texto, tipo) {
+            // Remover mensagem anterior se existir
+            const mensagemAnterior = document.querySelector('.mensagem-flutuante');
+            if (mensagemAnterior) {
+                mensagemAnterior.remove();
+            }
+            
+            // Criar nova mensagem
+            const mensagem = document.createElement('div');
+            mensagem.className = 'mensagem-flutuante';
+            mensagem.textContent = texto;
+            mensagem.style.position = 'fixed';
+            mensagem.style.bottom = '20px';
+            mensagem.style.right = '20px';
+            mensagem.style.padding = '15px 20px';
+            mensagem.style.borderRadius = '8px';
+            mensagem.style.color = 'white';
+            mensagem.style.zIndex = '1000';
+            mensagem.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+            mensagem.style.animation = 'aparecer 0.3s ease';
+            
+            // Cor baseada no tipo
+            if (tipo === 'success') {
+                mensagem.style.background = '#27ae60';
+            } else if (tipo === 'info') {
+                mensagem.style.background = '#3498db';
+            } else if (tipo === 'warning') {
+                mensagem.style.background = '#f39c12';
+            } else {
+                mensagem.style.background = '#2c3e50';
+            }
+            
+            document.body.appendChild(mensagem);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                mensagem.style.animation = 'desaparecer 0.3s ease';
+                setTimeout(() => {
+                    if (mensagem.parentNode) {
+                        mensagem.parentNode.removeChild(mensagem);
+                    }
+                }, 300);
+            }, 3000);
+            
+            // Adicionar animações CSS
+            if (!document.querySelector('#estilos-animacoes')) {
+                const style = document.createElement('style');
+                style.id = 'estilos-animacoes';
+                style.textContent = `
+                    @keyframes aparecer {
+                        from { transform: translateY(100px); opacity: 0; }
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    @keyframes desaparecer {
+                        from { transform: translateY(0); opacity: 1; }
+                        to { transform: translateY(100px); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    </script>
+</body>
+</html>
